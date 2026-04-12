@@ -129,3 +129,7 @@ def main():
 
     fig.tight_layout()
     plt.savefig(save_path, bbox_inches="tight")
+
+
+if __name__ == "__main__":
+    main()

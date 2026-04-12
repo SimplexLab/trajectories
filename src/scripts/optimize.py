@@ -102,3 +102,7 @@ def reset_seed():
     torch.manual_seed(0)
     np.random.seed(0)
     random.seed(0)
+
+
+if __name__ == "__main__":
+    main()
