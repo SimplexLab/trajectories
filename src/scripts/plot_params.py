@@ -118,7 +118,9 @@ def main():
     key_to_index = map_orders_to_indices(aggregator_keys, AGGREGATOR_ORDER)
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(n_cols * 2, n_rows * 2.5))
     # Ensure axes is always 2D
-    if n_rows == 1:
+    if n_rows == n_cols == 1:
+        axes = np.array([[axes]])
+    elif n_rows == 1:
         axes = axes.reshape(1, -1)
 
     # Hide unused subplots
