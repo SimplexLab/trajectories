@@ -50,6 +50,8 @@ from trajectories.plotting_utils import (
 
 
 def main():
+    print("Plotting in parameter space...")
+
     arguments = docopt(__doc__)
     objective_key = arguments["<objective>"]
 

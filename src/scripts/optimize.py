@@ -80,6 +80,8 @@ def main():
         xs_list = []
         ys_list = []
         for initial_point in initial_points:
+            print(initial_point)
+
             if hasattr(aggregator, "reset"):
                 aggregator.reset()
             reset_seed()
@@ -96,6 +98,7 @@ def main():
         Y = torch.stack(ys_list).numpy()
         np.save(params_dir / f"{aggregator_key}.npy", X)
         np.save(values_dir / f"{aggregator_key}.npy", Y)
+        print()
 
 
 def reset_seed():

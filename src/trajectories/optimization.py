@@ -20,6 +20,7 @@ def optimize(
     x = initial_x.clone().requires_grad_()
     optimizer = torch.optim.SGD([x], lr=lr)
     for i in range(n_iters):
+        print(f"{i + 1}/{n_iters}", end="\r")
         xs.append(x.detach().clone())
         y = objective(x)
         ys.append(y.detach().clone())
@@ -27,6 +28,7 @@ def optimize(
         autojac.backward(y)
         autojac.jac_to_grad([x], aggregator)
         optimizer.step()
+    print(" " * 50, end="\r")
 
     return xs, ys
 
