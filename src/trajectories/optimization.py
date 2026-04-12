@@ -1,8 +1,8 @@
 import numpy as np
 import torch
-import torchjd
 from torch import Tensor
 from torch.nn import functional as F
+from torchjd import autojac
 from torchjd.aggregation import Aggregator
 
 from trajectories.objectives import Objective
@@ -24,7 +24,8 @@ def optimize(
         y = objective(x)
         ys.append(y.detach().clone())
         optimizer.zero_grad()
-        torchjd.backward(y, aggregator=aggregator)
+        autojac.backward(y)
+        autojac.jac_to_grad([x], aggregator)
         optimizer.step()
 
     return xs, ys
