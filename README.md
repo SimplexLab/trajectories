@@ -25,7 +25,16 @@ sudo apt-get install texlive-latex-extra texlive-fonts-recommended dvipng cm-sup
 ```
 
 ## Usage
-Please refer to the docstring of the scripts.
+Please refer to the docstring of the scripts. To run a script, you can do for example:
+```bash
+uv run optimize EWQ upgrad
+```
+
+To run and plot everything:
+```bash
+uv run optimize EWQ imtl_g mgda aligned_mtl cagrad dualproj graddrop mean random upgrad nashmtl && uv run plot_values EWQ && uv run plot_params EWQ
+uv run optimize CQF imtl_g mgda aligned_mtl cagrad dualproj graddrop mean random upgrad nashmtl && uv run plot_values CQF && uv run plot_params CQF
+```
 
 ## Examples
 
