@@ -89,7 +89,7 @@ OBJECTIVES = {
 BASE_LEARNING_RATES = {
     "EWQ": 0.075,
     "CQF": 0.05,
-    "MN2": 0.05,
+    "MN2": 0.02,
 }
 INITIAL_POINTS = {
     "EWQ": [
@@ -116,7 +116,7 @@ INITIAL_POINTS = {
 N_ITERS = {
     "EWQ": 50,
     "CQF": 500,
-    "MN2": 10,
+    "MN2": 50,
 }
 N_SAMPLES_SPSM = {
     "EWQ": 1,
