@@ -284,7 +284,7 @@ class HeatmapPlotter(Plotter):
 class LimAdjuster(Plotter):
     """Plotter that adjusts the xlim and ylim of the plot to the specified xlim and ylim."""
 
-    def __init__(self, xlim: list[float], ylim: list[float]):
+    def __init__(self, xlim: tuple[float, float], ylim: tuple[float, float]):
         self.xlim = xlim
         self.ylim = ylim
 
@@ -303,8 +303,8 @@ class ContentLimAdjuster(LimAdjuster):
         y_range = y_max - y_min
         margin = 0.05
         super().__init__(
-            xlim=[x_min - margin * x_range, x_max + margin * x_range],
-            ylim=[y_min - margin * y_range, y_max + margin * y_range],
+            xlim=(x_min - margin * x_range, x_max + margin * x_range),
+            ylim=(y_min - margin * y_range, y_max + margin * y_range),
         )
 
 
