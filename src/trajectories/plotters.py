@@ -325,7 +325,7 @@ class YTicksClearer(Plotter):
 class XAxisLabeller(Plotter):
     """Plotter that labels the x-axis."""
 
-    def __init__(self, xlabel: str | None):
+    def __init__(self, xlabel: str):
         self.xlabel = xlabel
 
     def __call__(self, ax: plt.Axes) -> None:
@@ -335,7 +335,7 @@ class XAxisLabeller(Plotter):
 class YAxisLabeller(Plotter):
     """Plotter that labels the y-axis."""
 
-    def __init__(self, ylabel: str | None):
+    def __init__(self, ylabel: str):
         self.ylabel = ylabel
 
     def __call__(self, ax: plt.Axes) -> None:
@@ -345,7 +345,7 @@ class YAxisLabeller(Plotter):
 class TitleSetter(Plotter):
     """Plotter that sets the title."""
 
-    def __init__(self, title: str | None):
+    def __init__(self, title: str):
         self.title = title
 
     def __call__(self, ax: plt.Axes) -> None:
