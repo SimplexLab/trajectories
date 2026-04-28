@@ -91,14 +91,39 @@ def compute_objectives_pf_distances(
 
 
 def compute_pf_distance(pf_points: Tensor, y: Tensor) -> Tensor:
+    """Compute the distance from a point y to a piecewise-linear Pareto front.
+
+    The Pareto front is approximated as a polyline: the ordered sequence of
+    ``pf_points`` defines consecutive line segments, and the distance returned
+    is the minimum Euclidean distance from ``y`` to any of those segments.
+
+    For each segment [A, B] the closest point on the segment to ``y`` is found
+    via orthogonal projection:
+
+        t = dot(y - A, B - A) / ||B - A||²
+
+    ``t`` is clamped to [0, 1] so that the closest point is constrained to the
+    segment rather than the infinite line through A and B. This ensures correct
+    distances when ``y`` lies "outside" the extent of the front (i.e. beyond
+    either endpoint).
+
+    Args:
+        pf_points: Pareto front points of shape ``(k, n)``, ordered along the
+            front. Adjacent points define the segments of the polyline.
+        y: Query point of shape ``(n,)`` whose distance to the front is sought.
+
+    Returns:
+        Scalar tensor containing the minimum distance from ``y`` to the front.
+    """
     if len(pf_points) == 1:
         return (y - pf_points[0]).norm()
 
     pf_first = pf_points[:-1, :]
     pf_second = pf_points[1:, :]
-    pf_consecutive_diff = pf_first - pf_second
-    pf_norms = pf_consecutive_diff.norm(dim=1)
-    nominator1 = pf_consecutive_diff[:, 1] * y[0] - pf_consecutive_diff[:, 0] * y[1]
-    nominator2 = pf_second[:, 0] * pf_first[:, 1] - pf_second[:, 1] * pf_first[:, 0]
-    distances = torch.abs(nominator1 + nominator2) / pf_norms
+    d = pf_second - pf_first
+    t = ((y - pf_first) * d).sum(dim=1) / (d * d).sum(dim=1)
+    closest = pf_first + t.clamp(0, 1).unsqueeze(1) * d
+
+    # Clamp at 0 so that points below the PF have a distance of 0 to it.
+    distances = torch.clamp(y - closest, min=0).norm(dim=1)
     return torch.min(distances)
