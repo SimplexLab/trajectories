@@ -5,8 +5,8 @@ optimization trajectories.
 
 ## Installation
 ```bash
-uv python install 3.13.3
-uv python pin 3.13.3
+uv python install 3.14
+uv python pin 3.14
 ```
 
 ```bash
