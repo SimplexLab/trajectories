@@ -5,8 +5,13 @@ optimization trajectories.
 
 ## Installation
 ```bash
-uv python install 3.14
-uv python pin 3.14
+uv python install 3.13
+uv python pin 3.13
+```
+
+Note that there seems to be a matplotlib bug with python 3.14, giving this error:
+```
+_tkinter.TclError: Can't find a usable init.tcl in the following directories
 ```
 
 ```bash
