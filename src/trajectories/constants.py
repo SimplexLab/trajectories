@@ -118,8 +118,3 @@ N_ITERS = {
     "CQF": 500,
     "MN2": 50,
 }
-N_SAMPLES_SPSM = {
-    "EWQ": 1,
-    "CQF": 100,
-    "MN2": 100,
-}

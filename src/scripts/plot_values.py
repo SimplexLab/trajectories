@@ -17,16 +17,10 @@ import numpy as np
 import torch
 from docopt import docopt
 
-from trajectories.constants import (
-    AGGREGATOR_ORDER,
-    AGGREGATORS,
-    LATEX_NAMES,
-    N_SAMPLES_SPSM,
-    OBJECTIVES,
-)
+from trajectories.constants import AGGREGATOR_ORDER, AGGREGATORS, LATEX_NAMES, OBJECTIVES
 from trajectories.objectives import WithSPSMappingMixin
-from trajectories.optimization import compute_objectives_pf_distances
 from trajectories.paths import RESULTS_DIR, get_value_plots_dir, get_values_dir
+from trajectories.pf_distance import compute_objectives_pf_distances
 from trajectories.plotters import (
     ContentLimAdjuster,
     HeatmapPlotter,
@@ -70,7 +64,6 @@ def main():
     if objective.n_values != 2:
         raise ValueError("Can only plot values trajectories for objectives with 2 values.")
 
-    n_samples_spsm = N_SAMPLES_SPSM[objective_key]
     common_plotter = SquareBoxAspectSetter()
     aggregator_keys = metadata["aggregator_keys"]
     aggregator_to_Y = {key: np.load(values_dir / f"{key}.npy") for key in aggregator_keys}
@@ -80,7 +73,8 @@ def main():
     main_content = initial_values
 
     if isinstance(objective, WithSPSMappingMixin):
-        sps_points = objective.sps_mapping.sample(n_samples_spsm, eps=1e-5)
+        sps_mapping = objective.sps_mapping
+        sps_points = sps_mapping.sample(sps_mapping.N_SAMPLES, eps=1e-5)
         pf_points = torch.stack([objective(x) for x in sps_points])
         pf_points_array = pf_points.numpy()
         common_plotter += PFPlotter(pf_points_array)

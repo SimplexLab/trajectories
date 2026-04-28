@@ -21,7 +21,6 @@ from trajectories.constants import (
     AGGREGATORS,
     INITIAL_POINTS,
     LATEX_NAMES,
-    N_SAMPLES_SPSM,
     OBJECTIVES,
 )
 from trajectories.objectives import ElementWiseQuadratic, WithSPSMappingMixin
@@ -77,11 +76,11 @@ def main():
     initial_points = np.stack([np.array(point) for point in initial_points])
     main_content = initial_points  # The content to which the axes must be adjusted
 
-    n_samples_spsm = N_SAMPLES_SPSM[objective_key]
     common_plotter = SquareBoxAspectSetter()
 
     if isinstance(objective, WithSPSMappingMixin):
-        sps_points = objective.sps_mapping.sample(n_samples_spsm, eps=1e-5).numpy()
+        sps_mapping = objective.sps_mapping
+        sps_points = sps_mapping.sample(sps_mapping.N_SAMPLES, eps=1e-5).numpy()
         main_content = np.concatenate([main_content, sps_points])
         common_plotter += SPSPlotter(sps_points)
 

@@ -1,8 +1,13 @@
 from abc import ABC, abstractmethod
+from functools import partial
+from typing import Callable
 
 import numpy as np
 import torch
 from torch import Tensor
+from torch.func import grad
+
+from trajectories.pf_distance import compute_pf_distance
 
 
 class Objective(ABC):
@@ -29,10 +34,26 @@ class Objective(ABC):
         return f"{self.__class__.__name__}({self.n_values})"
 
 
+class WithPFDistanceMixin(ABC):
+    """
+    Mixin adding the possibility to compute the distance to the Pareto front. Since this function
+    may be costly to initialize but cheap to run, we provide a function returning the function that
+    can compute the distance to the pareto front.
+    """
+
+    @abstractmethod
+    def make_pf_distance_fn(self) -> Callable[[Tensor], Tensor]:
+        """
+        Creates the function that can compute from x the distance between f(x) and the Pareto front.
+        """
+
+
 class WithSPSMappingMixin(ABC):
     """Mixin adding the possibility to get the Strong Pareto stationary mapping."""
 
     class SPSMapping(ABC):
+        N_SAMPLES: int  # Preferred number of samples
+
         def __call__(self, w: Tensor) -> Tensor:
             """
             Map a vector with (strictly) positive coordinates to another vector.
@@ -93,7 +114,7 @@ class QuadraticForm(Objective):
         return x_minus_u @ A @ x_minus_u
 
 
-class ConvexQuadraticForm(QuadraticForm, WithSPSMappingMixin):
+class ConvexQuadraticForm(QuadraticForm, WithSPSMappingMixin, WithPFDistanceMixin):
     def __init__(self, Bs: list[Tensor], us: list[Tensor]):
         self.Bs = Bs
         super().__init__(As=[B @ B.T for B in self.Bs], us=us)
@@ -102,6 +123,8 @@ class ConvexQuadraticForm(QuadraticForm, WithSPSMappingMixin):
         return f"{self.__class__.__name__}(Bs={self.Bs}, us={self.us})"
 
     class SPSMapping(WithSPSMappingMixin.SPSMapping):
+        N_SAMPLES = 100
+
         def __init__(self, As: list[Tensor], us: list[Tensor]):
             self.As = As
             self.us = us
@@ -117,8 +140,14 @@ class ConvexQuadraticForm(QuadraticForm, WithSPSMappingMixin):
     def sps_mapping(self) -> SPSMapping:
         return self.SPSMapping(self.As, self.us)
 
+    def make_pf_distance_fn(self) -> Callable[[Tensor], Tensor]:
+        sps_points = self.sps_mapping.sample(self.sps_mapping.N_SAMPLES, eps=1e-5)
+        pf_points = torch.stack([self(x) for x in sps_points])
 
-class ElementWiseQuadratic(Objective, WithSPSMappingMixin):
+        return partial(compute_pf_distance, pf_points)
+
+
+class ElementWiseQuadratic(Objective, WithSPSMappingMixin, WithPFDistanceMixin):
     # TODO: we should probably make this a subclass of CQF
     def __init__(self, n_dim: int):
         super().__init__(n_params=n_dim, n_values=n_dim)
@@ -132,6 +161,8 @@ class ElementWiseQuadratic(Objective, WithSPSMappingMixin):
         return torch.diag(torch.stack([2 * x[0], 2 * x[1]]))
 
     class SPSMapping(WithSPSMappingMixin.SPSMapping):
+        N_SAMPLES = 1
+
         def __init__(self, n_values: int):
             self.n_values = n_values
 
@@ -142,8 +173,15 @@ class ElementWiseQuadratic(Objective, WithSPSMappingMixin):
     def sps_mapping(self) -> SPSMapping:
         return self.SPSMapping(self.n_values)
 
+    def make_pf_distance_fn(self) -> Callable[[Tensor], Tensor]:
+        # TODO: there is some code duplication here
+        sps_points = self.sps_mapping.sample(self.SPSMapping.N_SAMPLES, eps=1e-5)
+        pf_points = torch.stack([self(x) for x in sps_points])
 
-class Multinorm(Objective, WithSPSMappingMixin):
+        return partial(compute_pf_distance, pf_points)
+
+
+class Multinorm(Objective, WithSPSMappingMixin, WithPFDistanceMixin):
     # TODO: this is actually a convex quadratic form I think
     def __init__(self, a: Tensor):
         n = len(a)
@@ -161,6 +199,8 @@ class Multinorm(Objective, WithSPSMappingMixin):
         return self.a * 2 * (x.expand(len(x), len(x)) - torch.diag(self.a))
 
     class SPSMapping(WithSPSMappingMixin.SPSMapping):
+        N_SAMPLES = 100
+
         def __init__(self, n_values: int, a: Tensor):
             self.n_values = n_values
             self.a = a
@@ -172,3 +212,43 @@ class Multinorm(Objective, WithSPSMappingMixin):
     @property
     def sps_mapping(self) -> SPSMapping:
         return self.SPSMapping(self.n_values, self.a)
+
+    def make_pf_distance_fn(self) -> Callable[[Tensor], Tensor]:
+        return self.pf_distance
+
+    def pf_distance(self, x: Tensor) -> Tensor:
+        n_steps = 200
+        lr = 0.05
+
+        # ---- compute f(x)
+        norm_x2 = torch.sum(x**2)
+        fx = self.a * (norm_x2 - 2 * self.a * x + self.a**2)
+
+        # ---- define loss as function of u (logits)
+        def loss_fn(u):
+            lam = torch.softmax(u, dim=0)
+
+            x_star = self.a * lam
+            norm_xs2 = torch.sum(x_star**2)
+
+            F = self.a * (norm_xs2 - 2 * (self.a * x_star) + self.a**2)
+
+            return torch.sum((fx - F) ** 2)
+
+        grad_fn = grad(loss_fn)
+
+        # ---- initialize logits
+        u = torch.zeros_like(x)
+
+        # ---- gradient descent loop (pure functional)
+        for _ in range(n_steps):
+            g = grad_fn(u)
+            u = u - lr * g
+
+        # ---- final distance
+        lam = torch.softmax(u, dim=0)
+        x_star = self.a * lam
+        norm_xs2 = torch.sum(x_star**2)
+        F = self.a * (norm_xs2 - 2 * (self.a * x_star) + self.a**2)
+
+        return torch.norm(fx - F)

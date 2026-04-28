@@ -11,22 +11,14 @@ Options:
 """
 
 import json
-from functools import partial
 
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from docopt import docopt
 
-from trajectories.constants import (
-    AGGREGATOR_ORDER,
-    AGGREGATORS,
-    LATEX_NAMES,
-    N_SAMPLES_SPSM,
-    OBJECTIVES,
-)
-from trajectories.objectives import WithSPSMappingMixin
-from trajectories.optimization import compute_pf_distance
+from trajectories.constants import AGGREGATOR_ORDER, AGGREGATORS, LATEX_NAMES, OBJECTIVES
+from trajectories.objectives import WithPFDistanceMixin
 from trajectories.paths import RESULTS_DIR, get_distance_to_pf_plots_dir, get_values_dir
 from trajectories.plotters import (
     MultiEvolutionPlotter,
@@ -65,7 +57,7 @@ def main():
     objective_key = metadata["objective_key"]
     objective = OBJECTIVES[objective_key]
 
-    assert isinstance(objective, WithSPSMappingMixin)
+    assert isinstance(objective, WithPFDistanceMixin)
 
     common_plotter = SquareBoxAspectSetter()
 
@@ -88,18 +80,14 @@ def main():
         axes[i][j].axis("off")
 
     save_path = distance_to_pf_plots_dir / "all.pdf"
-
-    n_samples_spsm = N_SAMPLES_SPSM[objective_key]
-    sps_points = objective.sps_mapping.sample(n_samples_spsm, eps=1e-5)
-    pf_points = torch.stack([objective(x) for x in sps_points])
-    compute_pfd = partial(compute_pf_distance, pf_points)
+    pf_distance_fn = objective.make_pf_distance_fn()
 
     for aggregator_key, Y in aggregator_to_Y.items():
         aggregator = AGGREGATORS[aggregator_key]
         print(aggregator)
 
         # Y has shape [n_initial_points, n_iter, n_values]
-        pfd = torch.vmap(torch.vmap(compute_pfd))(torch.from_numpy(Y))
+        pfd = torch.vmap(torch.vmap(pf_distance_fn))(torch.from_numpy(Y))
 
         index = key_to_index[aggregator_key]
         i, j = get_subplot_position(index, n_aggregators, n_rows, n_cols)
