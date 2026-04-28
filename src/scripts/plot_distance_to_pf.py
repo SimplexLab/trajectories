@@ -18,7 +18,13 @@ import numpy as np
 import torch
 from docopt import docopt
 
-from trajectories.constants import AGGREGATOR_ORDER, LATEX_NAMES, N_SAMPLES_SPSM, OBJECTIVES
+from trajectories.constants import (
+    AGGREGATOR_ORDER,
+    AGGREGATORS,
+    LATEX_NAMES,
+    N_SAMPLES_SPSM,
+    OBJECTIVES,
+)
 from trajectories.objectives import WithSPSMappingMixin
 from trajectories.optimization import compute_pf_distance
 from trajectories.paths import RESULTS_DIR, get_distance_to_pf_plots_dir, get_values_dir
@@ -89,6 +95,9 @@ def main():
     compute_pfd = partial(compute_pf_distance, pf_points)
 
     for aggregator_key, Y in aggregator_to_Y.items():
+        aggregator = AGGREGATORS[aggregator_key]
+        print(aggregator)
+
         # Y has shape [n_initial_points, n_iter, n_values]
         pfd = torch.vmap(torch.vmap(compute_pfd))(torch.from_numpy(Y))
 
@@ -106,7 +115,10 @@ def main():
         plotter(axes[i][j])
 
     fig.tight_layout()
+
+    print("Saving figure")
     plt.savefig(save_path, bbox_inches="tight")
+    print()
 
 
 if __name__ == "__main__":

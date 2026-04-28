@@ -18,6 +18,7 @@ from docopt import docopt
 
 from trajectories.constants import (
     AGGREGATOR_ORDER,
+    AGGREGATORS,
     INITIAL_POINTS,
     LATEX_NAMES,
     N_SAMPLES_SPSM,
@@ -133,6 +134,9 @@ def main():
     save_path = param_plots_dir / "all.pdf"
 
     for aggregator_key, X in aggregator_to_X.items():
+        aggregator = AGGREGATORS[aggregator_key]
+        print(aggregator)
+
         index = key_to_index[aggregator_key]
         i, j = get_subplot_position(index, n_aggregators, n_rows, n_cols)
 
@@ -143,7 +147,9 @@ def main():
         plotter(axes[i][j])
 
     fig.tight_layout()
+    print("Saving figure")
     plt.savefig(save_path, bbox_inches="tight")
+    print()
 
 
 if __name__ == "__main__":

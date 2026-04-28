@@ -17,7 +17,13 @@ import numpy as np
 import torch
 from docopt import docopt
 
-from trajectories.constants import AGGREGATOR_ORDER, LATEX_NAMES, N_SAMPLES_SPSM, OBJECTIVES
+from trajectories.constants import (
+    AGGREGATOR_ORDER,
+    AGGREGATORS,
+    LATEX_NAMES,
+    N_SAMPLES_SPSM,
+    OBJECTIVES,
+)
 from trajectories.objectives import WithSPSMappingMixin
 from trajectories.optimization import compute_objectives_pf_distances
 from trajectories.paths import RESULTS_DIR, get_value_plots_dir, get_values_dir
@@ -122,6 +128,9 @@ def main():
     save_path = value_plots_dir / "all.pdf"
 
     for aggregator_key, Y in aggregator_to_Y.items():
+        aggregator = AGGREGATORS[aggregator_key]
+        print(aggregator)
+
         index = key_to_index[aggregator_key]
         i, j = get_subplot_position(index, n_aggregators, n_rows, n_cols)
 
@@ -132,7 +141,9 @@ def main():
         plotter(axes[i][j])
 
     fig.tight_layout()
+    print("Saving figure")
     plt.savefig(save_path, bbox_inches="tight")
+    print()
 
 
 if __name__ == "__main__":
