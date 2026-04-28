@@ -139,3 +139,34 @@ class ElementWiseQuadratic(Objective, WithSPSMappingMixin):
     @property
     def sps_mapping(self) -> SPSMapping:
         return self.SPSMapping(self.n_values)
+
+
+class Multinorm(Objective, WithSPSMappingMixin):
+    # TODO: this is actually a convex quadratic form I think
+    def __init__(self, a: Tensor):
+        n = len(a)
+        super().__init__(n_params=n, n_values=n)
+        self.a = a
+
+    def __call__(self, x: Tensor) -> Tensor:
+        if len(x) != self.n_values:
+            raise ValueError("x must have the same length as the number of values.")
+
+        # f_i(x) = a_i * || x - a_i * e_i  ||²
+        return self.a * torch.norm(x.expand(len(x), len(x)) - torch.diag(self.a), dim=1) ** 2
+
+    def jacobian(self, x: Tensor) -> Tensor:
+        return self.a * 2 * (x.expand(len(x), len(x)) - torch.diag(self.a))
+
+    class SPSMapping(WithSPSMappingMixin.SPSMapping):
+        def __init__(self, n_values: int, a: Tensor):
+            self.n_values = n_values
+            self.a = a
+
+        def _compute(self, w: Tensor) -> Tensor:
+            # return (w * (self.a ** 2)) / (torch.sum(w * self.a))
+            return w * self.a
+
+    @property
+    def sps_mapping(self) -> SPSMapping:
+        return self.SPSMapping(self.n_values, self.a)

@@ -16,7 +16,7 @@ from torchjd.aggregation import (
     UPGrad,
 )
 
-from trajectories.objectives import ConvexQuadraticForm, ElementWiseQuadratic
+from trajectories.objectives import ConvexQuadraticForm, ElementWiseQuadratic, Multinorm
 
 AGGREGATORS = {
     "upgrad": UPGrad(reg_eps=1e-7, norm_eps=1e-9),
@@ -84,10 +84,12 @@ OBJECTIVES = {
         ],
         us=[torch.tensor([1.0, 0.0]), torch.tensor([-1.0, 0.0])],
     ),
+    "MN2": Multinorm(torch.tensor([1.0, 10.0])),
 }
 BASE_LEARNING_RATES = {
     "EWQ": 0.075,
     "CQF": 0.05,
+    "MN2": 0.05,
 }
 INITIAL_POINTS = {
     "EWQ": [
@@ -103,12 +105,21 @@ INITIAL_POINTS = {
         [0.0, 0.0],
         [1.0, 6.0],
     ],
+    "MN2": [
+        [0.0, 0.0],
+        [-5.0, 5.0],
+        [10.0, 5.0],
+        [10.0, 0.0],
+        [20.0, 0.0],
+    ],
 }
 N_ITERS = {
     "EWQ": 50,
     "CQF": 500,
+    "MN2": 10,
 }
 N_SAMPLES_SPSM = {
     "EWQ": 1,
     "CQF": 100,
+    "MN2": 100,
 }
