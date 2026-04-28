@@ -26,3 +26,7 @@ check = [
 optimize = "scripts.optimize:main"
 plot_params = "scripts.plot_params:main"
 plot_values = "scripts.plot_values:main"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
