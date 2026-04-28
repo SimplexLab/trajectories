@@ -22,7 +22,7 @@ class Plotter(ABC):
         pass
 
     def __add__(self, other: "Plotter") -> "Plotter":
-        return MultiPlotter([self, other])
+        return MultiPlotter((self, other))
 
 
 class EmptyPlotter(Plotter):
@@ -35,7 +35,7 @@ class EmptyPlotter(Plotter):
 class MultiPlotter(Plotter):
     """Plotter applying several plotters."""
 
-    def __init__(self, plotters: list[Plotter]):
+    def __init__(self, plotters: tuple[Plotter, ...]):
         self.plotters = plotters
 
     def __call__(self, ax: plt.Axes) -> None:
@@ -131,9 +131,9 @@ class ContourCirclesPlotter(MultiPlotter):
 
     def __init__(self):
         radiuses = [1.0, 2.5, 4, 5.5, 7, 8.5]
-        colormap = cm.inferno_r
+        colormap = cm.inferno_r  # ty:ignore[unresolved-attribute]
         norm = mcolors.Normalize(vmin=-1, vmax=max(radiuses))
-        plotters = [CirclePlotter(radius, colormap(norm(radius))) for radius in radiuses]
+        plotters = tuple(CirclePlotter(radius, colormap(norm(radius))) for radius in radiuses)
         super().__init__(plotters)
 
 
@@ -157,7 +157,9 @@ class PathPlotter(MultiPlotter):
         y_view = sliding_window_view(points[:, 1], window_shape=2)
 
         colors = PathPlotter._get_color_gradient("#FF0000", "#FFEE00", len(points) - 1)
-        plotters = [SegmentPlotter(xp, yp, color) for xp, yp, color in zip(x_view, y_view, colors)]
+        plotters = tuple(
+            SegmentPlotter(xp, yp, color) for xp, yp, color in zip(x_view, y_view, colors)
+        )
         super().__init__(plotters)
 
     @staticmethod
@@ -187,7 +189,7 @@ class TrajPlotter(MultiPlotter):
     def __init__(self, points: np.array, initial_point_color: Color):
         x = points[0, 0]
         y = points[0, 1]
-        plotters = [InitialPointPlotter(x, y, initial_point_color), PathPlotter(points)]
+        plotters = (InitialPointPlotter(x, y, initial_point_color), PathPlotter(points))
         super().__init__(plotters)
 
 
@@ -197,7 +199,9 @@ class MultiTrajPlotter(MultiPlotter):
     CMAP = plt.get_cmap("Set2")
 
     def __init__(self, points_matrix: np.ndarray):
-        plotters = [TrajPlotter(points, self.CMAP(i)) for i, points in enumerate(points_matrix)]
+        plotters = tuple(
+            TrajPlotter(points, self.CMAP(i)) for i, points in enumerate(points_matrix)
+        )
         super().__init__(plotters)
 
 
