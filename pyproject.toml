@@ -26,6 +26,7 @@ check = [
 optimize = "scripts.optimize:main"
 plot_params = "scripts.plot_params:main"
 plot_values = "scripts.plot_values:main"
+plot_distance_to_pf = "scripts.plot_distance_to_pf:main"
 
 [tool.ruff]
 line-length = 100

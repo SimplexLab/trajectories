@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Union
 
+import matplotlib.patheffects as pe
 import numpy as np
 from matplotlib import cm as cm
 from matplotlib import colors as mcolors
@@ -201,6 +202,41 @@ class MultiTrajPlotter(MultiPlotter):
     def __init__(self, points_matrix: np.ndarray):
         plotters = tuple(
             TrajPlotter(points, self.CMAP(i)) for i, points in enumerate(points_matrix)
+        )
+        super().__init__(plotters)
+
+
+class EvolutionPlotter(Plotter):
+    """Plotter that can draw an evolution over the discrete timesteps."""
+
+    def __init__(self, values: np.ndarray, color: Color):
+        self.x = np.arange(len(values))
+        self.y = values
+        self.color = color
+
+    def __call__(self, ax: plt.Axes) -> None:
+        (line,) = ax.plot(self.x, self.y, color=self.color, linewidth=1.5)
+
+        # Add thin black outline around the lines
+        line.set_path_effects(
+            [
+                pe.Stroke(linewidth=2.1, foreground="black"),  # outline
+                pe.Normal(),  # original line on top
+            ]
+        )
+
+
+class MultiEvolutionPlotter(MultiPlotter):
+    """
+    Plotter that can draw the evolution of some vlaue over timestamps over the steps for each
+    initial point.
+    """
+
+    CMAP = plt.get_cmap("Set2")
+
+    def __init__(self, values_vector: np.ndarray):
+        plotters = tuple(
+            EvolutionPlotter(values, self.CMAP(i)) for i, values in enumerate(values_vector)
         )
         super().__init__(plotters)
 
