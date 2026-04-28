@@ -106,9 +106,11 @@ class ConvexQuadraticForm(QuadraticForm, WithSPSMappingMixin):
             self.As = As
             self.us = us
 
-        def _compute(self, ws: Tensor) -> Tensor:
-            G = torch.stack([w * A for w, A in zip(ws, self.As)]).sum(dim=0)
-            b = torch.stack([w * A @ u for w, A, u in zip(ws, self.As, self.us)]).sum(dim=0)
+        def _compute(self, w: Tensor) -> Tensor:
+            G = torch.stack([weight * A for weight, A in zip(w, self.As)]).sum(dim=0)
+            b = torch.stack([weight * A @ u for weight, A, u in zip(w, self.As, self.us)]).sum(
+                dim=0
+            )
             return torch.linalg.lstsq(G, b, driver="gelsd").solution
 
     @property
