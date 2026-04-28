@@ -186,7 +186,7 @@ class PathPlotter(MultiPlotter):
 class TrajPlotter(MultiPlotter):
     """Plotter that can draw a trajectory: initial point + path."""
 
-    def __init__(self, points: np.array, initial_point_color: Color):
+    def __init__(self, points: np.ndarray, initial_point_color: Color):
         x = points[0, 0]
         y = points[0, 1]
         plotters = (InitialPointPlotter(x, y, initial_point_color), PathPlotter(points))
