@@ -25,6 +25,7 @@ from trajectories.constants import (
 )
 from trajectories.objectives import ElementWiseQuadratic, WithSPSMappingMixin
 from trajectories.optimization import compute_gradient_cosine_similarities
+from trajectories.pareto_utils import sample_2d_spss
 from trajectories.paths import RESULTS_DIR, get_param_plots_dir, get_params_dir
 from trajectories.plotters import (
     AxesPlotter,
@@ -78,9 +79,8 @@ def main():
 
     common_plotter = SquareBoxAspectSetter()
 
-    if isinstance(objective, WithSPSMappingMixin):
-        sps_mapping = objective.sps_mapping
-        sps_points = sps_mapping.sample(sps_mapping.N_SAMPLES, eps=1e-5).numpy()
+    if objective.n_values == 2 and isinstance(objective, WithSPSMappingMixin):
+        sps_points = sample_2d_spss(objective).numpy()
         main_content = np.concatenate([main_content, sps_points])
         common_plotter += SPSPlotter(sps_points)
 

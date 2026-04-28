@@ -18,7 +18,7 @@ import torch
 from docopt import docopt
 
 from trajectories.constants import AGGREGATOR_ORDER, AGGREGATORS, LATEX_NAMES, OBJECTIVES
-from trajectories.objectives import WithPFDistanceMixin
+from trajectories.pareto_utils import make_2d_pf_distance_fn
 from trajectories.paths import RESULTS_DIR, get_distance_to_pf_plots_dir, get_values_dir
 from trajectories.plotters import (
     MultiEvolutionPlotter,
@@ -57,8 +57,6 @@ def main():
     objective_key = metadata["objective_key"]
     objective = OBJECTIVES[objective_key]
 
-    assert isinstance(objective, WithPFDistanceMixin)
-
     common_plotter = SquareBoxAspectSetter()
 
     aggregator_keys = metadata["aggregator_keys"]
@@ -80,7 +78,7 @@ def main():
         axes[i][j].axis("off")
 
     save_path = distance_to_pf_plots_dir / "all.pdf"
-    pf_distance_fn = objective.make_pf_distance_fn()
+    pf_distance_fn = make_2d_pf_distance_fn(objective)
 
     for aggregator_key, Y in aggregator_to_Y.items():
         aggregator = AGGREGATORS[aggregator_key]

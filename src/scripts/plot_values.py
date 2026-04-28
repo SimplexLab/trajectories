@@ -14,13 +14,12 @@ import json
 
 import matplotlib.pyplot as plt
 import numpy as np
-import torch
 from docopt import docopt
 
 from trajectories.constants import AGGREGATOR_ORDER, AGGREGATORS, LATEX_NAMES, OBJECTIVES
 from trajectories.objectives import WithSPSMappingMixin
+from trajectories.pareto_utils import compute_normalized_2d_pf_distances, sample_2d_pf
 from trajectories.paths import RESULTS_DIR, get_value_plots_dir, get_values_dir
-from trajectories.pf_distance import compute_objectives_pf_distances
 from trajectories.plotters import (
     ContentLimAdjuster,
     HeatmapPlotter,
@@ -73,10 +72,7 @@ def main():
     main_content = initial_values
 
     if isinstance(objective, WithSPSMappingMixin):
-        sps_mapping = objective.sps_mapping
-        sps_points = sps_mapping.sample(sps_mapping.N_SAMPLES, eps=1e-5)
-        pf_points = torch.stack([objective(x) for x in sps_points])
-        pf_points_array = pf_points.numpy()
+        pf_points_array = sample_2d_pf(objective).numpy()
         common_plotter += PFPlotter(pf_points_array)
         main_content = np.concatenate([main_content, pf_points_array])
 
@@ -85,8 +81,8 @@ def main():
 
         adjust_plotter = ContentLimAdjuster(main_content)
         common_plotter += adjust_plotter
-        distances = compute_objectives_pf_distances(
-            pf_points=pf_points,
+        distances = compute_normalized_2d_pf_distances(
+            objective,
             y0_min=adjust_plotter.xlim[0],
             y0_max=adjust_plotter.xlim[1],
             y1_min=adjust_plotter.ylim[0],
