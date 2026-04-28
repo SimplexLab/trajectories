@@ -87,7 +87,7 @@ def main():
         print(aggregator)
 
         # Y has shape [n_initial_points, n_iter, n_values]
-        pfd = torch.vmap(torch.vmap(pf_distance_fn))(torch.from_numpy(Y))
+        pfd = torch.vmap(torch.vmap(pf_distance_fn))(torch.from_numpy(Y).to(dtype=torch.float64))
 
         index = key_to_index[aggregator_key]
         i, j = get_subplot_position(index, n_aggregators, n_rows, n_cols)

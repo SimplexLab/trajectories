@@ -66,3 +66,18 @@ def compute_pf_distance(pf_points: Tensor, y: Tensor) -> Tensor:
     # Clamp at 0 so that points below the PF have a distance of 0 to it.
     distances = torch.clamp(y - closest, min=0).norm(dim=1)
     return torch.min(distances)
+
+
+def compute_pf_distance_nd(pf_points: Tensor, y: Tensor) -> Tensor:
+    """Compute the distance from a point y to a set of points in the Pareto front.
+
+    Args:
+        pf_points: Pareto front points of shape ``(k, n)``.
+        y: Query point of shape ``(n,)`` whose distance to the front is sought.
+
+    Returns:
+        Scalar tensor containing the minimum distance from ``y`` to the front.
+    """
+
+    distances = torch.cdist(pf_points, y.unsqueeze(0))
+    return distances.min()
