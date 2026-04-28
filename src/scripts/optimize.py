@@ -20,6 +20,7 @@ import warnings
 import numpy as np
 import torch
 from docopt import docopt
+from torchjd.aggregation import Stateful
 
 from trajectories.constants import (
     AGGREGATORS,
@@ -82,7 +83,7 @@ def main():
         for initial_point in initial_points:
             print(initial_point)
 
-            if hasattr(aggregator, "reset"):
+            if isinstance(aggregator, Stateful):
                 aggregator.reset()
             reset_seed()
 
