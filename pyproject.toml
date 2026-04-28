@@ -17,7 +17,9 @@ dependencies = [
 
 [dependency-groups]
 check = [
-    "pre-commit>=2.9.2"  # isort doesn't work before 2.9.2
+    "ruff>=0.14.14",
+    "ty>=0.0.14",
+    "pre-commit>=2.9.2",  # isort doesn't work before 2.9.2
 ]
 
 [project.scripts]
