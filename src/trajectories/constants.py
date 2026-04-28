@@ -23,6 +23,7 @@ AGGREGATORS = {
     "mgda": MGDA(),
     "cagrad": CAGrad(c=0.5),
     "nashmtl": NashMTL(n_tasks=2, optim_niter=1),
+    "nashmtl20": NashMTL(n_tasks=20, optim_niter=1),
     "graddrop": GradDrop(),
     "imtl_g": IMTLG(),
     "aligned_mtl": AlignedMTL(),
@@ -36,6 +37,7 @@ LR_MULTIPLIERS = {
     "mgda": 1.0,
     "cagrad": 1.0,
     "nashmtl": 2.0,
+    "nashmtl20": 2.0,
     "graddrop": 0.5,
     "imtl_g": 2.0,
     "aligned_mtl": 1.0,
@@ -49,6 +51,7 @@ AGGREGATOR_ORDER = {
     "mgda": 1,
     "cagrad": 5,
     "nashmtl": 7,
+    "nashmtl20": 7,
     "graddrop": 3,
     "imtl_g": 4,
     "aligned_mtl": 8,
@@ -62,6 +65,7 @@ LATEX_NAMES = {
     "mgda": r"$\mathcal A_{\mathrm{MGDA}}$",
     "cagrad": r"$\mathcal A_{\mathrm{CAGrad}}$",
     "nashmtl": r"$\mathcal A_{\mathrm{Nash-MTL}}$",
+    "nashmtl20": r"$\mathcal A_{\mathrm{Nash-MTL}}$",
     "graddrop": r"$\mathcal A_{\mathrm{GradDrop}}$",
     "imtl_g": r"$\mathcal A_{\mathrm{IMTL-G}}$",
     "aligned_mtl": r"$\mathcal A_{\mathrm{Aligned-MTL}}$",
@@ -85,11 +89,13 @@ OBJECTIVES = {
         us=[torch.tensor([1.0, 0.0]), torch.tensor([-1.0, 0.0])],
     ),
     "MN2": Multinorm(torch.tensor([1.0, 10.0])),
+    "MN20": Multinorm(torch.arange(1, 21)),
 }
 BASE_LEARNING_RATES = {
     "EWQ": 0.075,
     "CQF": 0.05,
     "MN2": 0.02,
+    "MN20": 0.005,
 }
 INITIAL_POINTS = {
     "EWQ": [
@@ -112,9 +118,13 @@ INITIAL_POINTS = {
         [10.0, 0.0],
         [20.0, 0.0],
     ],
+    "MN20": [
+        [0.0] * 20,
+    ],
 }
 N_ITERS = {
     "EWQ": 50,
     "CQF": 500,
     "MN2": 50,
+    "MN20": 500,
 }
