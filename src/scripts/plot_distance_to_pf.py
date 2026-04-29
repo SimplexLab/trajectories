@@ -18,7 +18,8 @@ import torch
 from docopt import docopt
 
 from trajectories.constants import AGGREGATOR_ORDER, AGGREGATORS, LATEX_NAMES, OBJECTIVES
-from trajectories.pareto_utils import make_2d_pf_distance_fn
+from trajectories.objectives import HomegenousQuadraticForm
+from trajectories.pareto_utils import make_2d_pf_distance_fn, make_nd_hqf_pf_distance_fn
 from trajectories.paths import RESULTS_DIR, get_distance_to_pf_plots_dir, get_values_dir
 from trajectories.plotters import (
     MultiEvolutionPlotter,
@@ -78,7 +79,13 @@ def main():
         axes[i][j].axis("off")
 
     save_path = distance_to_pf_plots_dir / "all.pdf"
-    pf_distance_fn = make_2d_pf_distance_fn(objective)
+
+    if isinstance(objective, HomegenousQuadraticForm):
+        pf_distance_fn = make_nd_hqf_pf_distance_fn(objective)
+    elif objective.n_values == 2:
+        pf_distance_fn = make_2d_pf_distance_fn(objective)
+    else:
+        raise ValueError(f"No way to compute Pareto front distance for {objective}")
 
     for aggregator_key, Y in aggregator_to_Y.items():
         aggregator = AGGREGATORS[aggregator_key]
