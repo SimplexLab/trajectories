@@ -94,9 +94,9 @@ OBJECTIVES = {
         us=[torch.tensor([1.0, 0.0]), torch.tensor([-1.0, 0.0])],
     ),
     "HQF": HomegenousQuadraticForm(
-        A=torch.tensor([[1.0, -0.5], [-0.5, 1.0]]),
-        scales=torch.tensor([0.1, 10.0]),
-        us=[torch.tensor([1.0, 0.0]), torch.tensor([-1.0, 0.0])],
+        A=torch.tensor([[2.0, -1.0], [-1.0, 2.0]]),
+        scales=torch.tensor([1.0, 10.0]),
+        us=[torch.tensor([1.0, 0.0]), torch.tensor([-10.0, 0.0])],
     ),
     "MN2": Multinorm(torch.tensor([1.0, 10.0])),
     "MN20": Multinorm(torch.arange(1, 21)),
@@ -104,7 +104,7 @@ OBJECTIVES = {
 BASE_LEARNING_RATES = {
     "EWQ": 0.075,
     "CQF": 0.05,
-    "HQF": 0.002,
+    "HQF": 0.001,
     "MN2": 0.02,
     "MN20": 0.005,
 }
@@ -123,11 +123,10 @@ INITIAL_POINTS = {
         [1.0, 6.0],
     ],
     "HQF": [
-        [0.5, 0.5],
-        [0.0, 0.0],
-        [0.5, -0.5],
-        [-0.5, -0.25],
-        [0.7, -0.1],
+        [-6.0, 4.0],
+        [-3.0, -1.5],
+        [1.5, 2.0],
+        [2.5, 5.5],
     ],
     "MN2": [
         [0.0, 0.0],
