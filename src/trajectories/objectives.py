@@ -45,7 +45,7 @@ class WithSPSMappingMixin(ABC):
         pass
 
 
-class QuadraticForm(Objective):
+class QuadraticForm(Objective, WithSPSMappingMixin):
     def __init__(self, As: list[Tensor], us: list[Tensor]):
         if len(As) != len(us):
             raise ValueError("As and us must have the same length.")
@@ -73,15 +73,6 @@ class QuadraticForm(Objective):
         x_minus_u = x - u
         return x_minus_u @ A @ x_minus_u
 
-
-class ConvexQuadraticForm(QuadraticForm, WithSPSMappingMixin):
-    def __init__(self, Bs: list[Tensor], us: list[Tensor]):
-        self.Bs = Bs
-        super().__init__(As=[B @ B.T for B in self.Bs], us=us)
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(Bs={self.Bs}, us={self.us})"
-
     class SPSMapping(WithSPSMappingMixin.SPSMapping):
         def __init__(self, As: list[Tensor], us: list[Tensor]):
             self.As = As
@@ -97,6 +88,15 @@ class ConvexQuadraticForm(QuadraticForm, WithSPSMappingMixin):
     @property
     def sps_mapping(self) -> SPSMapping:
         return self.SPSMapping(self.As, self.us)
+
+
+class ConvexQuadraticForm(QuadraticForm):
+    def __init__(self, Bs: list[Tensor], us: list[Tensor]):
+        self.Bs = Bs
+        super().__init__(As=[B @ B.T for B in self.Bs], us=us)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(Bs={self.Bs}, us={self.us})"
 
 
 class ElementWiseQuadratic(Objective, WithSPSMappingMixin):
