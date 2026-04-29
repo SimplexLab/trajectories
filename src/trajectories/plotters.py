@@ -345,17 +345,17 @@ class ContentLimAdjuster(LimAdjuster):
 
 
 class XTicksClearer(Plotter):
-    """Plotter that clears the xticks."""
+    """Plotter that hides the xticks."""
 
     def __call__(self, ax: plt.Axes) -> None:
-        ax.set_xticks([])
+        ax.tick_params(bottom=False, labelbottom=False)
 
 
 class YTicksClearer(Plotter):
-    """Plotter that clears the xticks."""
+    """Plotter that hides the yticks."""
 
     def __call__(self, ax: plt.Axes) -> None:
-        ax.set_yticks([])
+        ax.tick_params(left=False, labelleft=False)
 
 
 class XAxisLabeller(Plotter):
