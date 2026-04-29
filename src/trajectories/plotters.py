@@ -215,7 +215,7 @@ class EvolutionPlotter(Plotter):
         self.color = color
 
     def __call__(self, ax: plt.Axes) -> None:
-        (line,) = ax.semilogx(self.x, self.y, color=self.color, linewidth=1.5)
+        (line,) = ax.plot(self.x, self.y, color=self.color, linewidth=1.5)
 
         # Add thin black outline around the lines
         line.set_path_effects(
