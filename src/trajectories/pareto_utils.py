@@ -43,7 +43,7 @@ def sample_2d_spss(objective: Objective) -> Tensor:
     if isinstance(objective, ElementWiseQuadratic):
         n_samples = 1
     else:
-        n_samples = 100
+        n_samples = 1000
 
     sps_mapping = objective.sps_mapping
 
