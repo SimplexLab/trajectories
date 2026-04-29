@@ -82,6 +82,13 @@ LATEX_NAMES = {
 
 THETA = np.pi / 16
 
+A = torch.tensor(
+    [
+        [1.0, -0.5],
+        [-0.5, 1.0],
+    ]
+)
+
 OBJECTIVES = {
     "EWQ": ElementWiseQuadratic(2),
     "CQF": ConvexQuadraticForm(
@@ -94,7 +101,7 @@ OBJECTIVES = {
         us=[torch.tensor([1.0, 0.0]), torch.tensor([-1.0, 0.0])],
     ),
     "QF": QuadraticForm(
-        As=[torch.tensor([[0.1, -0.05], [-0.05, 0.1]]), torch.tensor([[10, -5.0], [-5.0, 10.0]])],
+        As=[0.1 * A, 10 * A],
         us=[torch.tensor([1.0, 0.0]), torch.tensor([-1.0, 0.0])],
     ),
     "MN2": Multinorm(torch.tensor([1.0, 10.0])),
@@ -126,6 +133,7 @@ INITIAL_POINTS = {
         [0.0, 0.0],
         [0.5, -0.5],
         [-0.5, -0.25],
+        [0.7, -0.1],
     ],
     "MN2": [
         [0.0, 0.0],
