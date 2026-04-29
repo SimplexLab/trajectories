@@ -224,6 +224,7 @@ class EvolutionPlotter(Plotter):
                 pe.Normal(),  # original line on top
             ]
         )
+        ax.grid(linewidth=0.5)
 
 
 class MultiEvolutionPlotter(MultiPlotter):
