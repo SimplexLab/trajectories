@@ -19,7 +19,7 @@ from torchjd.aggregation import (
 from trajectories.objectives import (
     ConvexQuadraticForm,
     ElementWiseQuadratic,
-    HomegenousQuadraticForm,
+    HomogenousQuadraticForm,
     Multinorm,
 )
 
@@ -93,7 +93,7 @@ OBJECTIVES = {
         ],
         us=[torch.tensor([1.0, 0.0]), torch.tensor([-1.0, 0.0])],
     ),
-    "HQF": HomegenousQuadraticForm(
+    "HQF": HomogenousQuadraticForm(
         A=torch.tensor([[2.0, -1.0], [-1.0, 2.0]]),
         scales=torch.tensor([1.0, 10.0]),
         us=[torch.tensor([1.0, 0.0]), torch.tensor([-10.0, 0.0])],

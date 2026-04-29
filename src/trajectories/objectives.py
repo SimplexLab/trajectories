@@ -90,7 +90,7 @@ class QuadraticForm(Objective, WithSPSMappingMixin):
         return self.SPSMapping(self.As, self.us)
 
 
-class HomegenousQuadraticForm(QuadraticForm):
+class HomogenousQuadraticForm(QuadraticForm):
     def __init__(self, A: Tensor, scales: Tensor, us: list[Tensor]):
         self.A = A
         self.scales = scales
