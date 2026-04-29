@@ -5,12 +5,7 @@ import numpy as np
 import torch
 from torch import Tensor, vmap
 
-from trajectories.objectives import (
-    ElementWiseQuadratic,
-    Objective,
-    QuadraticForm,
-    WithSPSMappingMixin,
-)
+from trajectories.objectives import ElementWiseQuadratic, Objective, WithSPSMappingMixin
 
 
 def compute_normalized_2d_pf_distances(
@@ -106,7 +101,3 @@ def make_2d_pf_distance_fn(objective: Objective) -> Callable[[Tensor], Tensor]:
         return torch.min(distances)
 
     return partial(compute_2d_pf_distance, pf_points)
-
-
-def make_nd_simple_qf_pf_distance_fn(objective: Objective) -> Callable[[Tensor], Tensor]:
-    assert isinstance(objective, QuadraticForm)
