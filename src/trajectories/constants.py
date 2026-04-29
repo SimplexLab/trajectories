@@ -19,8 +19,8 @@ from torchjd.aggregation import (
 from trajectories.objectives import (
     ConvexQuadraticForm,
     ElementWiseQuadratic,
+    HomegenousQuadraticForm,
     Multinorm,
-    QuadraticForm,
 )
 
 AGGREGATORS = {
@@ -82,13 +82,6 @@ LATEX_NAMES = {
 
 THETA = np.pi / 16
 
-A = torch.tensor(
-    [
-        [1.0, -0.5],
-        [-0.5, 1.0],
-    ]
-)
-
 OBJECTIVES = {
     "EWQ": ElementWiseQuadratic(2),
     "CQF": ConvexQuadraticForm(
@@ -100,8 +93,9 @@ OBJECTIVES = {
         ],
         us=[torch.tensor([1.0, 0.0]), torch.tensor([-1.0, 0.0])],
     ),
-    "QF": QuadraticForm(
-        As=[0.1 * A, 10 * A],
+    "HQF": HomegenousQuadraticForm(
+        A=torch.tensor([[1.0, -0.5], [-0.5, 1.0]]),
+        scales=torch.tensor([0.1, 10.0]),
         us=[torch.tensor([1.0, 0.0]), torch.tensor([-1.0, 0.0])],
     ),
     "MN2": Multinorm(torch.tensor([1.0, 10.0])),
@@ -110,7 +104,7 @@ OBJECTIVES = {
 BASE_LEARNING_RATES = {
     "EWQ": 0.075,
     "CQF": 0.05,
-    "QF": 0.002,
+    "HQF": 0.002,
     "MN2": 0.02,
     "MN20": 0.005,
 }
@@ -128,7 +122,7 @@ INITIAL_POINTS = {
         [0.0, 0.0],
         [1.0, 6.0],
     ],
-    "QF": [
+    "HQF": [
         [0.5, 0.5],
         [0.0, 0.0],
         [0.5, -0.5],
@@ -149,7 +143,7 @@ INITIAL_POINTS = {
 N_ITERS = {
     "EWQ": 50,
     "CQF": 500,
-    "QF": 500,
+    "HQF": 500,
     "MN2": 50,
     "MN20": 500,
 }
