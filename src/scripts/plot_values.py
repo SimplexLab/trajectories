@@ -76,8 +76,8 @@ def main():
         common_plotter += PFPlotter(pf_points_array)
         main_content = np.concatenate([main_content, pf_points_array])
 
-        # if objective_key == "CQF":
-        # main_content = np.array([[0.0, 0.0], [2.5, 8.5]])
+        if objective_key == "CQF":
+            main_content = np.array([[0.0, 0.0], [2.5, 8.5]])
 
         adjust_plotter = ContentLimAdjuster(main_content)
         common_plotter += adjust_plotter
