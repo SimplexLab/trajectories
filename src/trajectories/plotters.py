@@ -210,12 +210,12 @@ class EvolutionPlotter(Plotter):
     """Plotter that can draw an evolution over the discrete timesteps."""
 
     def __init__(self, values: np.ndarray, color: Color):
-        self.x = np.arange(len(values))
+        self.x = np.arange(len(values)) + 1
         self.y = values
         self.color = color
 
     def __call__(self, ax: plt.Axes) -> None:
-        (line,) = ax.plot(self.x, self.y, color=self.color, linewidth=1.5)
+        (line,) = ax.semilogx(self.x, self.y, color=self.color, linewidth=1.5)
 
         # Add thin black outline around the lines
         line.set_path_effects(
