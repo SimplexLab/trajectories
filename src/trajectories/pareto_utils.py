@@ -7,8 +7,8 @@ from torch import Tensor, vmap
 
 from trajectories.objectives import (
     ElementWiseQuadratic,
-    HomegenousQuadraticForm,
     Objective,
+    QuadraticForm,
     WithSPSMappingMixin,
 )
 
@@ -108,8 +108,5 @@ def make_2d_pf_distance_fn(objective: Objective) -> Callable[[Tensor], Tensor]:
     return partial(compute_2d_pf_distance, pf_points)
 
 
-def make_nd_hqf_pf_distance_fn(objective: HomegenousQuadraticForm) -> Callable[[Tensor], Tensor]:
-    def compute_nd_pf_distance(y: Tensor) -> Tensor:
-        return torch.tensor(3.0)
-
-    return compute_nd_pf_distance
+def make_nd_simple_qf_pf_distance_fn(objective: Objective) -> Callable[[Tensor], Tensor]:
+    assert isinstance(objective, QuadraticForm)
