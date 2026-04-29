@@ -65,7 +65,7 @@ def main():
     n_aggregators = len(aggregator_keys)
     n_rows, n_cols = compute_subplot_layout(n_aggregators)
     key_to_index = map_orders_to_indices(aggregator_keys, AGGREGATOR_ORDER)
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(n_cols * 2, n_rows * 2.5), sharey="row")
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(n_cols * 2, n_rows * 2.5), sharey="all")
     # Ensure axes is always 2D
     if n_rows == n_cols == 1:
         axes = np.array([[axes]])
