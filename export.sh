@@ -1,4 +1,9 @@
 cp ./results/EWQ/param_plots/all.pdf ./final_plots/EWQ_params.pdf
 cp ./results/EWQ/value_plots/all.pdf ./final_plots/EWQ_values.pdf
-cp ./results/CQF/param_plots/all.pdf ./final_plots/CQF_params.pdf
-cp ./results/CQF/value_plots/all.pdf ./final_plots/CQF_values.pdf
+cp ./results/EWQ/distance_to_pf/all.pdf ./final_plots/EWQ_distances.pdf
+cp ./results/CQF2/param_plots/all.pdf ./final_plots/CQF_params.pdf
+cp ./results/CQF2/value_plots/all.pdf ./final_plots/CQF_values.pdf
+cp ./results/CQF2/distance_to_pf/all.pdf ./final_plots/CQF_distances.pdf
+cp ./results/HQF/param_plots/all.pdf ./final_plots/HQF_params.pdf
+cp ./results/HQF/value_plots/all.pdf ./final_plots/HQF_values.pdf
+cp ./results/HQF/distance_to_pf/all.pdf ./final_plots/HQF_distances.pdf
