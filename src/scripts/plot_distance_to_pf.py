@@ -95,8 +95,8 @@ def main():
             + MultiEvolutionPlotter(pfd.numpy())
             + TitleSetter(LATEX_NAMES[aggregator_key])
         )
-        plotter += XAxisLabeller("steps") if i == n_rows - 1 else XTicksClearer()
-        plotter += YAxisLabeller("distance to Pareto front") if j == 0 else YTicksClearer()
+        plotter += XAxisLabeller("Iteration") if i == n_rows - 1 else XTicksClearer()
+        plotter += YAxisLabeller("Distance to Pareto front") if j == 0 else YTicksClearer()
 
         plotter(axes[i][j])
 
