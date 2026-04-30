@@ -83,17 +83,18 @@ def main():
         common_plotter += PFPlotter(pf_points_array)
         main_content = np.concatenate([main_content, pf_points_array])
 
-        if objective_key in PLOT_VALUES_LIMS:
-            lims = PLOT_VALUES_LIMS[objective_key]
-            xlim = lims["xlim"]
-            ylim = lims["ylim"]
-            common_plotter += LimAdjuster(xlim=xlim, ylim=ylim)
-        else:
-            adjust_plotter = ContentLimAdjuster(main_content)
-            common_plotter += adjust_plotter
-            xlim = adjust_plotter.xlim
-            ylim = adjust_plotter.ylim
+    if objective_key in PLOT_VALUES_LIMS:
+        lims = PLOT_VALUES_LIMS[objective_key]
+        xlim = lims["xlim"]
+        ylim = lims["ylim"]
+        common_plotter += LimAdjuster(xlim=xlim, ylim=ylim)
+    else:
+        adjust_plotter = ContentLimAdjuster(main_content)
+        common_plotter += adjust_plotter
+        xlim = adjust_plotter.xlim
+        ylim = adjust_plotter.ylim
 
+    if isinstance(objective, WithSPSMappingMixin):
         distances = compute_normalized_2d_pf_distances(
             objective,
             y0_min=xlim[0],

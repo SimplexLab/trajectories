@@ -84,14 +84,14 @@ def main():
         main_content = np.concatenate([main_content, sps_points])
         common_plotter += SPSPlotter(sps_points)
 
-    adjust_plotter = ContentLimAdjuster(main_content)
-    common_plotter += adjust_plotter
-
     if isinstance(objective, ElementWiseQuadratic):
         common_plotter += AxesPlotter()
         common_plotter += ContourCirclesPlotter()
         common_plotter += LimAdjuster(xlim=(-5.0, 5.0), ylim=(-5.0, 5.0))
     else:
+        adjust_plotter = ContentLimAdjuster(main_content)
+        common_plotter += adjust_plotter
+
         if objective.n_values == 2:
             similarities = compute_gradient_cosine_similarities(
                 objective,
