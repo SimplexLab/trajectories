@@ -26,6 +26,7 @@ from trajectories.constants import (
     AGGREGATORS,
     BASE_LEARNING_RATES,
     INITIAL_POINTS,
+    LR_MULTIPLIER_OVERRIDES,
     LR_MULTIPLIERS,
     N_ITERS,
     OBJECTIVES,
@@ -49,9 +50,13 @@ def main():
 
     objective = OBJECTIVES[objective_key]
     initial_points = INITIAL_POINTS[objective_key]
-    learning_rates = {
-        key: BASE_LEARNING_RATES[objective_key] * mult for key, mult in LR_MULTIPLIERS.items()
-    }
+
+    learning_rates = {}
+    lr_multiplier_overrides = LR_MULTIPLIER_OVERRIDES.get(objective_key, {})
+    base_lr = BASE_LEARNING_RATES[objective_key]
+    for key in LR_MULTIPLIERS:
+        mult = lr_multiplier_overrides.get(key, LR_MULTIPLIERS[key])
+        learning_rates[key] = mult * base_lr
     n_iters = N_ITERS[objective_key]
 
     torch.use_deterministic_algorithms(True)

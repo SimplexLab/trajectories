@@ -21,6 +21,7 @@ from trajectories.objectives import (
     ElementWiseQuadratic,
     HomogenousQuadraticForm,
     Multinorm,
+    QuadraticForm,
 )
 
 AGGREGATORS = {
@@ -39,17 +40,26 @@ AGGREGATORS = {
 }
 LR_MULTIPLIERS = {
     "upgrad": 1.0,
-    "mgda": 1.0,
+    "mgda": 2.0,
     "cagrad": 1.0,
     "nashmtl": 2.0,
     "nashmtl20": 2.0,
     "graddrop": 0.5,
-    "imtl_g": 2.0,
-    "aligned_mtl": 1.0,
+    "imtl_g": 1.0,
+    "aligned_mtl": 4.0,
     "dualproj": 1.0,
     "pcgrad": 0.5,
     "random": 1.0,
     "mean": 1.0,
+}
+# Some methods have optimal LRs that are very problem-specific. This allows overriding the LR
+# per-problem.
+LR_MULTIPLIER_OVERRIDES = {
+    "HQF": {
+        "nashmtl": 20.0,
+        "imtl_g": 2.0,
+    },
+    "CQF2": {"nashmtl": 0.5},
 }
 AGGREGATOR_ORDER = {
     "upgrad": 9,
@@ -93,6 +103,10 @@ OBJECTIVES = {
         ],
         us=[torch.tensor([1.0, 0.0]), torch.tensor([-1.0, 0.0])],
     ),
+    "CQF2": QuadraticForm(
+        As=[torch.tensor([[1.0, 0.2], [0.2, 0.05]]), torch.tensor([[3.0, -0.6], [-0.6, 0.2]])],
+        us=[torch.tensor([1.0, 0.0]), torch.tensor([-1.0, 0.0])],
+    ),
     "HQF": HomogenousQuadraticForm(
         A=torch.tensor([[2.0, -1.0], [-1.0, 2.0]]),
         scales=torch.tensor([1.0, 10.0]),
@@ -104,7 +118,8 @@ OBJECTIVES = {
 BASE_LEARNING_RATES = {
     "EWQ": 0.075,
     "CQF": 0.05,
-    "HQF": 0.001,
+    "CQF2": 0.125,
+    "HQF": 0.005,
     "MN2": 0.02,
     "MN20": 0.005,
 }
@@ -121,6 +136,11 @@ INITIAL_POINTS = {
         [-1.0, 7.0],
         [0.0, 0.0],
         [1.0, 6.0],
+    ],
+    "CQF2": [
+        [0.5, 0.5],
+        [-0.3, 7.0],
+        [0.0, 0.0],
     ],
     "HQF": [
         [-6.0, 4.0],
@@ -142,7 +162,8 @@ INITIAL_POINTS = {
 N_ITERS = {
     "EWQ": 50,
     "CQF": 500,
-    "HQF": 500,
+    "CQF2": 200,
+    "HQF": 100,
     "MN2": 50,
     "MN20": 500,
 }
