@@ -16,13 +16,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 from docopt import docopt
 
-from trajectories.constants import AGGREGATOR_ORDER, AGGREGATORS, LATEX_NAMES, OBJECTIVES
+from trajectories.constants import (
+    AGGREGATOR_ORDER,
+    AGGREGATORS,
+    LATEX_NAMES,
+    OBJECTIVES,
+    PLOT_VALUES_LIMS,
+)
 from trajectories.objectives import WithSPSMappingMixin
 from trajectories.pareto_utils import compute_normalized_2d_pf_distances, sample_2d_pf
 from trajectories.paths import RESULTS_DIR, get_value_plots_dir, get_values_dir
 from trajectories.plotters import (
     ContentLimAdjuster,
     HeatmapPlotter,
+    LimAdjuster,
     MultiTrajPlotter,
     PFPlotter,
     SquareBoxAspectSetter,
@@ -76,25 +83,31 @@ def main():
         common_plotter += PFPlotter(pf_points_array)
         main_content = np.concatenate([main_content, pf_points_array])
 
-        if objective_key == "CQF":
-            main_content = np.array([[0.0, 0.0], [2.5, 8.5]])
+        if objective_key in PLOT_VALUES_LIMS:
+            lims = PLOT_VALUES_LIMS[objective_key]
+            xlim = lims["xlim"]
+            ylim = lims["ylim"]
+            common_plotter += LimAdjuster(xlim=xlim, ylim=ylim)
+        else:
+            adjust_plotter = ContentLimAdjuster(main_content)
+            common_plotter += adjust_plotter
+            xlim = adjust_plotter.xlim
+            ylim = adjust_plotter.ylim
 
-        adjust_plotter = ContentLimAdjuster(main_content)
-        common_plotter += adjust_plotter
         distances = compute_normalized_2d_pf_distances(
             objective,
-            y0_min=adjust_plotter.xlim[0],
-            y0_max=adjust_plotter.xlim[1],
-            y1_min=adjust_plotter.ylim[0],
-            y1_max=adjust_plotter.ylim[1],
+            y0_min=xlim[0],
+            y0_max=xlim[1],
+            y1_min=ylim[0],
+            y1_max=ylim[1],
             n=200,
         )
         common_plotter += HeatmapPlotter(
             values=distances.numpy(),
-            x_min=adjust_plotter.xlim[0],
-            x_max=adjust_plotter.xlim[1],
-            y_min=adjust_plotter.ylim[0],
-            y_max=adjust_plotter.ylim[1],
+            x_min=xlim[0],
+            x_max=xlim[1],
+            y_min=ylim[0],
+            y_max=ylim[1],
             vmin=0,
             vmax=1,
             cmap="Reds",

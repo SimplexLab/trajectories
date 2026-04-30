@@ -59,6 +59,7 @@ LR_MULTIPLIER_OVERRIDES = {
         "nashmtl": 20.0,
         "imtl_g": 2.0,
     },
+    "CQF": {"nashmtl": 0.5},
     "CQF2": {"nashmtl": 0.5},
 }
 AGGREGATOR_ORDER = {
@@ -90,6 +91,18 @@ LATEX_NAMES = {
     "mean": r"$\mathcal A_{\mathrm{Mean}}$",
 }
 
+# Sometimes we need to override the xlim and ylim of the value plot to zoom enough
+PLOT_VALUES_LIMS = {
+    "CQF": {
+        "xlim": (-0.125, 2.625),
+        "ylim": (-0.425, 8.925),
+    },
+    "CQF2": {
+        "xlim": (-0.125, 2.625),
+        "ylim": (-0.425, 8.925),
+    },
+}
+
 THETA = np.pi / 16
 
 OBJECTIVES = {
@@ -117,7 +130,7 @@ OBJECTIVES = {
 }
 BASE_LEARNING_RATES = {
     "EWQ": 0.075,
-    "CQF": 0.05,
+    "CQF": 0.125,
     "CQF2": 0.125,
     "HQF": 0.005,
     "MN2": 0.02,
@@ -161,7 +174,7 @@ INITIAL_POINTS = {
 }
 N_ITERS = {
     "EWQ": 50,
-    "CQF": 500,
+    "CQF": 200,
     "CQF2": 200,
     "HQF": 100,
     "MN2": 50,
