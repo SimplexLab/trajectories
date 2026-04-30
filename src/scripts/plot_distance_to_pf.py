@@ -100,7 +100,7 @@ def main():
 
         plotter(axes[i][j])
 
-    fig.tight_layout()
+    fig.tight_layout(h_pad=-2.5)
 
     print("Saving figure")
     plt.savefig(save_path, bbox_inches="tight")
